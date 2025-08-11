@@ -3,6 +3,8 @@ package com.mycompany.evisionn;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Arrays;
+import com.mycompany.evisionn.TreeNode;
 
 class KeyPath {
     String key;
@@ -18,7 +20,7 @@ public class UserDAO {
     // Database connection info
     private static final String URL = "jdbc:postgresql://localhost:5432/db1";
     private static final String USER = "postgres";
-    private static final String PASSWORD = "2003";
+    private static final String PASSWORD = "26233254";
 
     // Store entries in memory
     private List<KeyPath> keyPathCache = new ArrayList<>();
@@ -106,29 +108,56 @@ public class UserDAO {
         return keyPathCache;
     }
 
-    public void getTree(List<KeyPath> entries) {
-        // TODO: Implement tree construction from entries
-        System.out.println("🌳 Building tree from " + entries.size() + " entries...");
+   public void getTree(List<KeyPath> entries) {
+    System.out.println("🌳 Building tree from " + entries.size() + " entries...");
+    
+    // Convert entries with string paths to tree entries with list paths
+    List<TreeNode.KeyPath> treeEntries = getKeyPathsForTree();
+    
+    TreeNode root = new TreeNode("");
+    root.insertFromList(treeEntries);
+    root.print("");
+}
+
+    public List<TreeNode.KeyPath> getKeyPathsForTree() {
+    List<TreeNode.KeyPath> treeEntries = new ArrayList<>();
+    for (KeyPath kp : keyPathCache) {
+        List<String> parts = Arrays.asList(kp.fieldPath.split("/"));
+        treeEntries.add(new TreeNode.KeyPath(kp.key, parts));
     }
+    return treeEntries;
+}
+
 
     // Main method for testing
     public static void main(String[] args) {
-        UserDAO dao = new UserDAO();
+     
+    UserDAO dao = new UserDAO();
 
-        dao.addKeyPath("C", "a/b");
-        dao.addKeyPath("F", "a/b/d/e");
-        dao.addKeyPath("X", "q/u");
-        dao.addKeyPath("Y", "q/p");
-        dao.addKeyPath("G", "a/b");
+    dao.addKeyPath("C", "a/b");
+    dao.addKeyPath("F", "a/b/d/e");
+    dao.addKeyPath("X", "q/u");
+    dao.addKeyPath("Y", "q/p");
+    dao.addKeyPath("G", "a/b");
 
-        System.out.println("\n📋 All Entries (From Memory):");
-        for (KeyPath kp : dao.getAllKeyPaths()) {
-            System.out.println("Key: " + kp.key);
-            System.out.println("Field Path: " + kp.fieldPath);
-            System.out.println("-------------------");
-        }
+    // Get all KeyPath entries from the DB (with string paths)
+    List<KeyPath> entries = dao.getAllKeyPaths();
 
-        // Call your tree builder
-        dao.getTree(dao.getAllKeyPaths());
+    // Convert to TreeNode.KeyPath (with List<String> pathParts)
+    List<TreeNode.KeyPath> treeEntries = new ArrayList<>();
+    for (KeyPath kp : entries) {
+        List<String> parts = Arrays.asList(kp.fieldPath.split("/"));
+        treeEntries.add(new TreeNode.KeyPath(kp.key, parts));
     }
+
+    // Create a TreeNode root
+    TreeNode root = new TreeNode("");
+
+    // Call insertFromList with converted entries
+    root.insertFromList(treeEntries);
+
+    // Print the constructed tree
+    root.print("");
+}
+
 }
