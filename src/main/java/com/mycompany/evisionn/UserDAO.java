@@ -1,13 +1,5 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.mycompany.evisionn;
 
-/**
- *
- * @author zeynatghallab
- */
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +20,9 @@ public class UserDAO {
     private static final String USER = "postgres";
     private static final String PASSWORD = "2003";
 
+    // Store entries in memory
+    private List<KeyPath> keyPathCache = new ArrayList<>();
+
     public UserDAO() {
         try {
             Class.forName("org.postgresql.Driver");
@@ -35,6 +30,12 @@ public class UserDAO {
             System.err.println("❌ PostgreSQL Driver not found!");
             e.printStackTrace();
         }
+        refreshCache();
+    }
+
+    // Refresh in-memory list from DB
+    private void refreshCache() {
+        keyPathCache = getAllKeyPathsFromDB();
     }
 
     // Add entry (insert if not exists, update if exists)
@@ -46,7 +47,6 @@ public class UserDAO {
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD)) {
             boolean exists = false;
 
-            // Check if key exists
             try (PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
                 checkStmt.setString(1, key);
                 try (ResultSet rs = checkStmt.executeQuery()) {
@@ -57,14 +57,12 @@ public class UserDAO {
             }
 
             if (exists) {
-                // Update if exists
                 try (PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
                     updateStmt.setString(1, fieldPath);
                     updateStmt.setString(2, key);
                     updateStmt.executeUpdate();
                 }
             } else {
-                // Insert if new
                 try (PreparedStatement insertStmt = conn.prepareStatement(insertSql)) {
                     insertStmt.setString(1, key);
                     insertStmt.setString(2, fieldPath);
@@ -72,14 +70,17 @@ public class UserDAO {
                 }
             }
 
+            // Refresh in-memory list after change
+            refreshCache();
+
         } catch (SQLException e) {
             System.err.println("❌ Error adding/updating Key-Path: " + key);
             e.printStackTrace();
         }
     }
 
-    // Get all entries as separate key/fieldPath values
-    public List<KeyPath> getAllKeyPaths() {
+    // Internal: Get all entries from DB
+    private List<KeyPath> getAllKeyPathsFromDB() {
         List<KeyPath> keyPaths = new ArrayList<>();
         String sql = "SELECT \"key\", field_path FROM table_new ORDER BY \"key\" ASC";
 
@@ -100,24 +101,34 @@ public class UserDAO {
         return keyPaths;
     }
 
+  
+    public List<KeyPath> getAllKeyPaths() {
+        return keyPathCache;
+    }
+
+    public void getTree(List<KeyPath> entries) {
+        // TODO: Implement tree construction from entries
+        System.out.println("🌳 Building tree from " + entries.size() + " entries...");
+    }
+
     // Main method for testing
     public static void main(String[] args) {
         UserDAO dao = new UserDAO();
 
-        // Add or update entries
         dao.addKeyPath("C", "a/b");
         dao.addKeyPath("F", "a/b/d/e");
         dao.addKeyPath("X", "q/u");
         dao.addKeyPath("Y", "q/p");
         dao.addKeyPath("G", "a/b");
 
-        // Output all entries with separate key and field path
-        System.out.println("\n📋 All Entries in Database:");
+        System.out.println("\n📋 All Entries (From Memory):");
         for (KeyPath kp : dao.getAllKeyPaths()) {
             System.out.println("Key: " + kp.key);
             System.out.println("Field Path: " + kp.fieldPath);
             System.out.println("-------------------");
         }
+
+        // Call your tree builder
+        dao.getTree(dao.getAllKeyPaths());
     }
 }
-
