@@ -103,11 +103,11 @@ public class UserDAO {
         return keyPaths;
     }
 
-  
     public List<KeyPath> getAllKeyPaths() {
         return keyPathCache;
     }
 
+<<<<<<< HEAD
    public void getTree(List<KeyPath> entries) {
     System.out.println("🌳 Building tree from " + entries.size() + " entries...");
     
@@ -124,6 +124,57 @@ public class UserDAO {
     for (KeyPath kp : keyPathCache) {
         List<String> parts = Arrays.asList(kp.fieldPath.split("/"));
         treeEntries.add(new TreeNode.KeyPath(kp.key, parts));
+=======
+    // Tree node structure
+    static class TreeNode {
+        String name;
+        List<TreeNode> children = new ArrayList<>();
+
+        TreeNode(String name) {
+            this.name = name;
+        }
+
+        TreeNode getOrCreateChild(String name) {
+            for (TreeNode child : children) {
+                if (child.name.equals(name)) {
+                    return child;
+                }
+            }
+            TreeNode newChild = new TreeNode(name);
+            children.add(newChild);
+            return newChild;
+        }
+    }
+
+    // Build and print the tree
+    public void getTree(List<KeyPath> entries) {
+        TreeNode root = new TreeNode("ROOT");
+
+        for (KeyPath kp : entries) {
+            String[] parts = kp.fieldPath.split("/");
+            TreeNode current = root;
+
+            // Traverse or create nodes for the path
+            for (String part : parts) {
+                current = current.getOrCreateChild(part);
+            }
+
+            // Add the key as the leaf node
+            current.getOrCreateChild(kp.key);
+        }
+
+        // Print the tree structure
+        printTree(root, 0);
+    }
+
+    // Recursive tree printer
+    private void printTree(TreeNode node, int depth) {
+        String indent = "  ".repeat(depth);
+        System.out.println(indent + "- " + node.name);
+        for (TreeNode child : node.children) {
+            printTree(child, depth + 1);
+        }
+>>>>>>> c2fa72964f64691c95774c3b4b0d6d046703d215
     }
     return treeEntries;
 }
@@ -143,11 +194,16 @@ public class UserDAO {
     // Get all KeyPath entries from the DB (with string paths)
     List<KeyPath> entries = dao.getAllKeyPaths();
 
+<<<<<<< HEAD
     // Convert to TreeNode.KeyPath (with List<String> pathParts)
     List<TreeNode.KeyPath> treeEntries = new ArrayList<>();
     for (KeyPath kp : entries) {
         List<String> parts = Arrays.asList(kp.fieldPath.split("/"));
         treeEntries.add(new TreeNode.KeyPath(kp.key, parts));
+=======
+        System.out.println("\n🌳 Tree Structure:");
+        dao.getTree(dao.getAllKeyPaths());
+>>>>>>> c2fa72964f64691c95774c3b4b0d6d046703d215
     }
 
     // Create a TreeNode root
