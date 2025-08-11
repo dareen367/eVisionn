@@ -14,8 +14,6 @@ class KeyPath {
     }
 }
 
-
-
 public class UserDAO {
     // Database connection info
     private static final String URL = "jdbc:postgresql://localhost:5432/db1";

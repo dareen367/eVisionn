@@ -1,8 +1,15 @@
+
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Project/Maven2/JavaApp/src/main/java/${packagePath}/${mainClassName}.java to edit this template
+ */
+
 package com.mycompany.evisionn;
 import java.util.*;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
+
 /**
  *
  * @author hanee
@@ -57,17 +64,17 @@ class TreeNode {
         child.print(indent + "  ");
     }
 }
-    public void insertFromList(List<KeyPathEntry> entries) {
-        for (KeyPathEntry entry : entries) {
+    public void insertFromList(List<KeyPath> entries) {
+        for (KeyPath entry : entries) {
             insert(entry.pathParts, Arrays.asList(entry.key));
         }
     }
 
-    public static class KeyPathEntry {
+    public static class KeyPath {
     public String key;
     public List<String> pathParts;
 
-    public KeyPathEntry(String key, List<String> pathParts) {
+    public KeyPath(String key, List<String> pathParts) {
         this.key = key;
         this.pathParts = pathParts;
     }
@@ -77,10 +84,10 @@ class TreeNode {
 
 
    public static void main(String[] args) {
-    List<KeyPathEntry> entries = new ArrayList<>();
-    entries.add(new KeyPathEntry("f", Arrays.asList("a", "b", "o", "e")));
-    entries.add(new KeyPathEntry("z", Arrays.asList("a", "b", "p")));
-    entries.add(new KeyPathEntry("x", Arrays.asList("a", "q")));
+    List<KeyPath> entries = new ArrayList<>();
+    entries.add(new KeyPath("f", Arrays.asList("a", "b", "o", "e")));
+    entries.add(new KeyPath("z", Arrays.asList("a", "b", "p")));
+    entries.add(new KeyPath("x", Arrays.asList("a", "q")));
 
     TreeNode root = new TreeNode("");
     root.insertFromList(entries);
