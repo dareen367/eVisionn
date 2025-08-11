@@ -1,16 +1,12 @@
-
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Project/Maven2/JavaApp/src/main/java/${packagePath}/${mainClassName}.java to edit this template
- */
-
 package com.mycompany.evisionn;
 import java.util.*;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
 /**
  *
  * @author hanee
  */
-import java.util.*;
 
 class TreeNode {
     String value;
@@ -29,21 +25,29 @@ class TreeNode {
         }
         return null;
     }
+        public void insertMultiple(List<String> keys, List<String> paths) {
+    for (int i = 0; i < keys.size(); i++) {
+        String key = keys.get(i);
+        String path = paths.get(i);
+        insert(paths, keys);  // reuse your existing insert method
+    }
+}
+
     // Insert path and key
-    public void insert(String key, String path) {
-            String[] parts = path.split("/");
+    public void insert(List<String> path, List<String> keys) {
+            //String[] parts = path.split("/");
             TreeNode current = this;
-            for (int i = 0; i < parts.length; i++) {
-                String part = parts[i];
-                TreeNode child = current.getChild(part);
-                if (child == null) {
-                    child = new TreeNode(part);
-                    current.children.add(child);
-                }
-                current = child;
-            }
-            current.children.add(new TreeNode(key));
+             for (String part : path) {
+        TreeNode child = current.getChild(part);
+        if (child == null) {
+            child = new TreeNode(part);
+            current.children.add(child);
         }
+        current = child;
+    }
+            for (String key : keys) {
+        current.children.add(new TreeNode(key));
+    }        }
     
     public void print(String indent) {
     if (value != null && !value.equals("")) {
@@ -53,19 +57,34 @@ class TreeNode {
         child.print(indent + "  ");
     }
 }
+    public void insertFromList(List<KeyPathEntry> entries) {
+        for (KeyPathEntry entry : entries) {
+            insert(entry.pathParts, Arrays.asList(entry.key));
+        }
+    }
 
+    public static class KeyPathEntry {
+    public String key;
+    public List<String> pathParts;
 
-
-    public static void main(String[] args) {
-        TreeNode root = new TreeNode("");
-
-        root.insert("a/b", "c");     // Creates top-level "a" tree
-        root.insert("a/b/d/e", "f");     // Goes into existing "a" tree
-        root.insert("q/u/", "x");   // Creates new top-level "m" tree
-        root.insert("q/r/", "v");
-        root.insert("c/t/", "v");
-         root.insert("a/b", "l");
-        
-        root.print("");
+    public KeyPathEntry(String key, List<String> pathParts) {
+        this.key = key;
+        this.pathParts = pathParts;
     }
 }
+
+
+
+
+   public static void main(String[] args) {
+    List<KeyPathEntry> entries = new ArrayList<>();
+    entries.add(new KeyPathEntry("f", Arrays.asList("a", "b", "o", "e")));
+    entries.add(new KeyPathEntry("z", Arrays.asList("a", "b", "p")));
+    entries.add(new KeyPathEntry("x", Arrays.asList("a", "q")));
+
+    TreeNode root = new TreeNode("");
+    root.insertFromList(entries);
+    root.print("");
+}
+}
+
