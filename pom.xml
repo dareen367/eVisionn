@@ -10,5 +10,16 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <exec.mainClass>com.mycompany.evisionn.EVisionn</exec.mainClass>
+        <exec.mainClass>com.mycompany.evisionn.UserDAO</exec.mainClass>
     </properties>
+    
+        <dependencies>
+        <!-- PostgreSQL JDBC Driver -->
+        <dependency>
+    <groupId>org.postgresql</groupId>
+    <artifactId>postgresql</artifactId>
+    <version>42.7.4</version>
+        </dependency>
+
+    </dependencies>
 </project>
