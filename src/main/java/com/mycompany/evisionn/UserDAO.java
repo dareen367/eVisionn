@@ -101,14 +101,59 @@ public class UserDAO {
         return keyPaths;
     }
 
-  
     public List<KeyPath> getAllKeyPaths() {
         return keyPathCache;
     }
 
+    // Tree node structure
+    static class TreeNode {
+        String name;
+        List<TreeNode> children = new ArrayList<>();
+
+        TreeNode(String name) {
+            this.name = name;
+        }
+
+        TreeNode getOrCreateChild(String name) {
+            for (TreeNode child : children) {
+                if (child.name.equals(name)) {
+                    return child;
+                }
+            }
+            TreeNode newChild = new TreeNode(name);
+            children.add(newChild);
+            return newChild;
+        }
+    }
+
+    // Build and print the tree
     public void getTree(List<KeyPath> entries) {
-        // TODO: Implement tree construction from entries
-        System.out.println("🌳 Building tree from " + entries.size() + " entries...");
+        TreeNode root = new TreeNode("ROOT");
+
+        for (KeyPath kp : entries) {
+            String[] parts = kp.fieldPath.split("/");
+            TreeNode current = root;
+
+            // Traverse or create nodes for the path
+            for (String part : parts) {
+                current = current.getOrCreateChild(part);
+            }
+
+            // Add the key as the leaf node
+            current.getOrCreateChild(kp.key);
+        }
+
+        // Print the tree structure
+        printTree(root, 0);
+    }
+
+    // Recursive tree printer
+    private void printTree(TreeNode node, int depth) {
+        String indent = "  ".repeat(depth);
+        System.out.println(indent + "- " + node.name);
+        for (TreeNode child : node.children) {
+            printTree(child, depth + 1);
+        }
     }
 
     // Main method for testing
@@ -128,7 +173,7 @@ public class UserDAO {
             System.out.println("-------------------");
         }
 
-        // Call your tree builder
+        System.out.println("\n🌳 Tree Structure:");
         dao.getTree(dao.getAllKeyPaths());
     }
 }
