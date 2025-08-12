@@ -6,6 +6,7 @@ package com.mycompany.evisionn.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 /**
@@ -15,7 +16,8 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "table_new")
 public class TableNew {
-//    int id;
+    @Id
+    int id;
     
     @Column(name = "key")
     String key;
